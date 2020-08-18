@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New PS Games</title>
+	<link rel="stylesheet" href="style.css"></link>
+ </head>
+  <body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <!--<script src="d3.min.js?v=3.2.8"></script>-->
+
+    <script type="text/javascript"charset="utf-8">
+        d3.text("newGames.csv", function(data) {
+            var parsedCSV = d3.csv.parseRows(data);
+            var count = 0
+
+            parsedCSV.forEach(row => {
+              title = row[0]
+              price = row[1]
+              added = row[2]
+              search = row[3]
+              buy = row[4]
+
+
+              var table = document.getElementById('grid')
+              var row = document.createElement("tr")
+              table.appendChild(row)
+                var firstColumn = document.createElement('td')
+                firstColumn.innerHTML = title
+                row.appendChild(firstColumn)
+
+                var secondColumn = document.createElement('td')
+                secondColumn.innerHTML = price
+                row.appendChild(secondColumn)
+
+                var thirdColumn = document.createElement('td')
+                thirdColumn.innerHTML = added
+                row.appendChild(thirdColumn)
+
+                if(count == 0){
+                  var fourth = document.createElement('td')
+                  fourth.innerHTML = search
+                  row.appendChild(fourth)
+                }
+                else{
+                var fourthColumn = document.createElement('td')
+                var tag = document.createElement('a')
+                tag.setAttribute('href', search)
+                tag.setAttribute('target', 'blank')
+                tag.innerHTML = title
+                fourthColumn.appendChild(tag)
+                row.appendChild(fourthColumn)
+                }
+
+                if(count == 0){
+                  var fifth = document.createElement('td')
+                  fifth.innerHTML = buy
+                  row.appendChild(fifth)
+                }
+                else{
+                var fifthColumn = document.createElement('td')
+                var tags = document.createElement('a')
+                tags.setAttribute('href', buy)
+                tags.setAttribute('target', 'blank')
+                tags.innerHTML = 'Buy!'
+                fifthColumn.appendChild(tags)
+                row.appendChild(fifthColumn)
+                }
+                count++
+            });
+        });
+    </script>
+      <center>
+    <table id='grid'>
+      <div class="image"><img src='psLogo.png' width="50" height="50"></div>
+        <div class="cap"><caption>Newest Ps Games!</caption></div>
+    </table>
+    </center>
+  </body>
+</html>

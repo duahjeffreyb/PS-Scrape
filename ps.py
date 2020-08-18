@@ -6,11 +6,16 @@ from bs4 import BeautifulSoup as soup
 import requests
 import schedule
 import time
+import pandas as pd
+import json
+import csv
 
 
 url = requests.get(
     'https://store.playstation.com/en-us/grid/STORE-MSF77008-NEWGAMESGRID/1').text
 gameTitle = 'gameTitles.txt'
+google = 'https://www.google.com/search?q='
+psStore = 'https://store.playstation.com/en-us/grid/search-game/1?query='
 
 
 def getPsGames():
@@ -24,23 +29,25 @@ def getPsGames():
 
     filename = 'newGames.csv'
     f = open(filename, 'w', encoding='utf-8')
-    headers = "Title, Price, Newly Added?\n"
+    headers = "Title, Price, Newly Added?, Search, PS Store\n"
     f.write(headers)
 
     for i in range(0, len(titles)):
         price = allPrices[i].h3.text
         gameTitle = titles[i].span.text
+        realTitle = gameTitle.replace(",", " ")
         if(checkIfNew(pastGames, titles[i].text.strip()) == True):
             f.write(gameTitle.replace(",", " ") +
-                    ',' + price + ',' + 'new' + '\n')
+                    ',' + price + ',' + 'new' + ',' + (google + realTitle.replace(" ", "+")) + ',' + (psStore + realTitle.replace(" ", "%20")) + '\n')
         else:
             f.write(gameTitle.replace(",", " ") +
-                    ',' + price + ',' + "-" + '\n')
+                    ',' + price + ',' + "-" + ',' + (google + realTitle.replace(" ", "+")) + ',' + (psStore + realTitle.replace(" ", "%20")) + '\n')
         print(gameTitle)
         print(price)
         print()
     f.close()
     getCurrentTitles(titles)
+    csvToJson()
     # print(page_soup)
     # print(b_soup.prettify())
     # print(price)
@@ -77,6 +84,17 @@ def getCurrentTitles(titles):
     for title in titles:
         file.write(title.span.text + '\n')
     file.close()
+
+
+def csvToJson():
+    csvFile = open('newGames.csv', 'r')
+    jsonFile = open('newGames.json', 'w')
+
+    fields = ('Title', 'Price', 'Newly Added')
+    reader = csv.DictReader(csvFile, fields)
+    for row in reader:
+        json.dump(row, jsonFile)
+        jsonFile.write('\n')
 
 
 if __name__ == "__main__":
